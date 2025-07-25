@@ -1,4 +1,4 @@
-a:link, a:visited :not(div) {
+a:link, a:visited {
   background-color: #1a94fe;
   color: white;
   padding: 5px 15px;
