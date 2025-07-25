@@ -11,3 +11,7 @@ a:hover, a:active {
   background-color: #166ab4
   
 
+button {
+    display: block;
+}
+
