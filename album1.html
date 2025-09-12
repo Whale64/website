@@ -1,58 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
-    <!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Whale64</title>
-  <link rel="icon" type="image/x-icon" href="favicon.png">
-  <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet" />
-  <style>
-    body {
-      font-family: 'Lexend', sans-serif;
-        text-align: center;
-
-    }
-    img {
-  display: block;
-  margin-left: auto;
-  margin-right: auto;
-}
-
-  </style>
-</head>
-<body>
-
- <img src="logo.png" alt="Logo">
-     <h3>Home</h3>
-
-<link rel="stylesheet" href="styles.css">
-
-</body>
-</html>
-  <a   href="https://whale64.net">Home</a> 
-<a    href="https://whale64.net/aboutme.html">About</a> 
-<a  href="https://whale64.net/contactme.html">Contact Me</a>
- <a  href="https://whale64.net/menu.html">Site Map</a> 
-
-
-    
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Whale64</title>
+    <link rel="icon" type="image/x-icon" href="favicon.png">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet" />
     <style>
         body {
-            font-family: sans-serif;
-            margin: 20px;
-            display: flex;
-            flex-direction: column;
-            align-items: center; 
+            font-family: 'Lexend', sans-serif;
+            text-align: center;
+            margin: 0;
             background-color: #f4f4f4;
         }
-      
+
+        /* Styles from the new header */
+        img.logo {
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+            max-width: 200px; /* Adjust logo size as needed */
+            height: auto;
+            margin-bottom: 20px;
+        }
+
+        h3.home-heading {
+            margin-top: 0;
+            margin-bottom: 20px;
+            color: #333;
+        }
+
+        .header-links {
+            padding-bottom: 20px;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #ddd;
+        }
+        
+        .header-links a {
+            text-decoration: none;
+            color: #555;
+            margin: 0 15px;
+            font-size: 1.1em;
+            transition: color 0.3s ease;
+        }
+
+        .header-links a:hover {
+            color: #000;
+        }
+
+        /* Styles for the image gallery container */
         .image-container {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -63,7 +59,11 @@
             background-color: #fff;
             border-radius: 10px;
             box-shadow: 0 0 15px rgba(0,0,0,0.05);
+            box-sizing: border-box;
+            margin: 0 auto; /* Center the image container */
         }
+        
+        /* ... (rest of the CSS for images) ... */
         .image-item {
             position: relative;
             overflow: hidden;
@@ -87,11 +87,20 @@
             object-fit: cover;
             display: block;
         }
+
     </style>
 </head>
 <body>
 
-    <h1>Album #1 "The Place the Compass Forgot"</h1>
+    <img src="logo.png" alt="Logo" class="logo">
+    <h3 class="home-heading">Home</h3>
+
+    <div class="header-links">
+        <a href="https://whale64.net">Home</a> 
+        <a href="https://whale64.net/aboutme.html">About</a> 
+        <a href="https://whale64.net/contactme.html">Contact Me</a>
+        <a href="https://whale64.net/menu.html">Site Map</a>
+    </div>
 
     <div class="image-container" id="imageGallery"></div>
 
@@ -99,7 +108,6 @@
         const baseUrl = 'https://raw.githubusercontent.com/Whale64/album1/main/';
         const imageGallery = document.getElementById('imageGallery');
 
-        // Function to handle the download
         async function downloadImage(imageUrl, fileName) {
             try {
                 const response = await fetch(imageUrl);
@@ -123,18 +131,15 @@
             const imageUrl = `${baseUrl}${i}.jpg`;
             const fileName = `image-${i}.jpg`;
 
-            // Create the image element
             const img = document.createElement('img');
             img.src = imageUrl;
             img.alt = `Image ${i}`;
             img.loading = 'lazy';
 
-            // Create a styled div to wrap the image
             const imageItem = document.createElement('div');
             imageItem.classList.add('image-item');
             imageItem.appendChild(img);
 
-            // Add the click event listener to the styled div
             imageItem.addEventListener('click', () => {
                 downloadImage(imageUrl, fileName);
             });
@@ -142,13 +147,6 @@
             imageGallery.appendChild(imageItem);
         }
     </script>
-  <footer class="bg-gray-900 text-white text-center p-4 rounded-t-lg">
-    <div class="container mx-auto">
-  
-      
-    <p>Photos #1  © 2025 by Whale64 is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/</p>
 
-    </div>
-  </footer>
 </body>
 </html>
