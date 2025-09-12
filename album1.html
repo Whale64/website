@@ -3,20 +3,22 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Image Gallery</title>
+    <title>Whake64</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
     <style>
-      
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f3f4f6;
+        }
         .image-container {
             position: relative;
             overflow: hidden;
             border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
             transition: transform 0.3s ease-in-out;
-            /* Added for consistent aspect ratio on landscape images */
             --tw-aspect-ratio: 16/9;
             aspect-ratio: var(--tw-aspect-ratio);
         }
@@ -24,70 +26,131 @@
             transform: scale(1.05);
             cursor: pointer;
         }
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            justify-content: center;
+            align-items: center;
+        }
+        .modal-content {
+            position: relative;
+            background-color: #fefefe;
+            padding: 1rem;
+            border-radius: 0.75rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+        }
+        .close {
+            position: absolute;
+            top: 10px;
+            right: 15px;
+            color: #aaa;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body class="p-6">
 
     <div class="max-w-7xl mx-auto py-8">
-        <h1 class="text-4xl font-extrabold text-gray-900 mb-2 text-center">Image Gallery</h1>
-        <p class="text-lg text-gray-600 mb-8 text-center">A simple showcase of 21 beautiful images.</p>
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2 text-center">Album #1 "The Place the Compass Forgot"</h1>
+        <p class="text-lg text-gray-600 mb-8 text-center">All images are held under: <a href="https://github.com/Whale64/album1">Photos #1</a> © 2025 by <a href="https://whale64.net">Whale64</a> is licensed under <a href="https://creativecommons.org/licenses/by-nc-sa/4.0/">CC BY-NC-SA 4.0</a><img src="https://mirrors.creativecommons.org/presskit/icons/cc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/by.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/nc.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"><img src="https://mirrors.creativecommons.org/presskit/icons/sa.svg" alt="" style="max-width: 1em;max-height:1em;margin-left: .2em;"></p>
 
         <!-- Image Grid -->
         <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <!-- Loop through images 1 to 21 -->
-            <script>
-                const gallery = document.querySelector('.grid');
-                const baseUrl = 'https://raw.githubusercontent.com/Whale64/album1/main/';
-
-                for (let i = 1; i <= 21; i++) {
-                    const imageUrl = `${baseUrl}${i}.jpg`;
-                    const imgContainer = document.createElement('div');
-                    // Added flexbox classes to center the image
-                    imgContainer.className = 'image-container flex items-center justify-center';
-
-                    const img = document.createElement('img');
-                    img.src = imageUrl;
-                    img.alt = `Image number ${i}`;
-                    // Changed to h-full to fit the new aspect ratio container
-                    img.className = 'w-full h-full object-cover rounded-lg';
-                    img.loading = 'lazy'; // Optional: for performance
-                    img.onerror = () => {
-                        console.error(`Failed to load image: ${imageUrl}`);
-                        img.src = 'https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found';
-                    };
-
-                    // Add a click event listener to each image
-                    img.addEventListener('click', () => {
-                        // Fetch the image data
-                        fetch(imageUrl)
-                            .then(response => response.blob())
-                            .then(blob => {
-                                // Create a temporary URL for the blob
-                                const blobUrl = URL.createObjectURL(blob);
-                                
-                                // Create a temporary anchor tag to trigger the download
-                                const tempLink = document.createElement('a');
-                                tempLink.href = blobUrl;
-                                tempLink.download = `image_${i}.jpg`;
-                                
-                                // Programmatically click the link to trigger the download
-                                document.body.appendChild(tempLink);
-                                tempLink.click();
-                                document.body.removeChild(tempLink);
-
-                                // Clean up the temporary URL
-                                URL.revokeObjectURL(blobUrl);
-                            })
-                            .catch(e => console.error("Could not download image:", e));
-                    });
-                    
-                    // Append the image to the container
-                    imgContainer.appendChild(img);
-                    gallery.appendChild(imgContainer);
-                }
-            </script>
+            <!-- Images will be generated here by the script -->
         </div>
     </div>
 
+    <!-- The Modal -->
+    <div id="image-modal" class="modal">
+        <div class="modal-content">
+            <span class="close">&times;</span>
+            <img id="modal-image" class="rounded-lg object-contain max-w-[90vw] max-h-[90vh]" src="" alt="Full-size preview">
+            <button id="download-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out self-center">
+                Download Image
+            </button>
+        </div>
+    </div>
+
+    <script>
+        const gallery = document.querySelector('.grid');
+        const modal = document.getElementById('image-modal');
+        const modalImage = document.getElementById('modal-image');
+        const closeBtn = document.querySelector('.close');
+        const downloadBtn = document.getElementById('download-btn');
+        const baseUrl = 'https://raw.githubusercontent.com/Whale64/album1/main/';
+
+        for (let i = 1; i <= 21; i++) {
+            const imageUrl = `${baseUrl}${i}.jpg`;
+            const imgContainer = document.createElement('div');
+            imgContainer.className = 'image-container flex items-center justify-center';
+
+            const img = document.createElement('img');
+            img.src = imageUrl;
+            img.alt = `Image number ${i}`;
+            img.className = 'w-full h-full object-cover rounded-lg';
+            img.loading = 'lazy';
+            img.onerror = () => {
+                console.error(`Failed to load image: ${imageUrl}`);
+                img.src = 'https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found';
+            };
+
+            // Event listener to open the modal
+            img.addEventListener('click', () => {
+                modal.style.display = 'flex';
+                modalImage.src = imageUrl;
+            });
+            
+            imgContainer.appendChild(img);
+            gallery.appendChild(imgContainer);
+        }
+
+        // Event listener to close the modal
+        closeBtn.addEventListener('click', () => {
+            modal.style.display = 'none';
+        });
+
+        // Close modal when clicking outside the content
+        window.addEventListener('click', (event) => {
+            if (event.target === modal) {
+                modal.style.display = 'none';
+            }
+        });
+
+        // Event listener for the download button inside the modal
+        downloadBtn.addEventListener('click', () => {
+            const imageUrl = modalImage.src;
+            // Get the image number from the URL for the filename
+            const imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
+
+            fetch(imageUrl)
+                .then(response => response.blob())
+                .then(blob => {
+                    const blobUrl = URL.createObjectURL(blob);
+                    const tempLink = document.createElement('a');
+                    tempLink.href = blobUrl;
+                    tempLink.download = imageName;
+                    
+                    document.body.appendChild(tempLink);
+                    tempLink.click();
+                    document.body.removeChild(tempLink);
+                    URL.revokeObjectURL(blobUrl);
+                })
+                .catch(e => console.error("Could not download image:", e));
+        });
+    </script>
+
 </body>
 </html>
+
