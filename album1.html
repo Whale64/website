@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simple Image Gallery</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
+    <style>
+      
+        .image-container {
+            position: relative;
+            overflow: hidden;
+            border-radius: 0.75rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+            transition: transform 0.3s ease-in-out;
+            /* Added for consistent aspect ratio on landscape images */
+            --tw-aspect-ratio: 16/9;
+            aspect-ratio: var(--tw-aspect-ratio);
+        }
+        .image-container:hover {
+            transform: scale(1.05);
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body class="p-6">
+
+    <div class="max-w-7xl mx-auto py-8">
+        <h1 class="text-4xl font-extrabold text-gray-900 mb-2 text-center">Image Gallery</h1>
+        <p class="text-lg text-gray-600 mb-8 text-center">A simple showcase of 21 beautiful images.</p>
+
+        <!-- Image Grid -->
+        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+            <!-- Loop through images 1 to 21 -->
+            <script>
+                const gallery = document.querySelector('.grid');
+                const baseUrl = 'https://raw.githubusercontent.com/Whale64/album1/main/';
+
+                for (let i = 1; i <= 21; i++) {
+                    const imageUrl = `${baseUrl}${i}.jpg`;
+                    const imgContainer = document.createElement('div');
+                    // Added flexbox classes to center the image
+                    imgContainer.className = 'image-container flex items-center justify-center';
+
+                    const img = document.createElement('img');
+                    img.src = imageUrl;
+                    img.alt = `Image number ${i}`;
+                    // Changed to h-full to fit the new aspect ratio container
+                    img.className = 'w-full h-full object-cover rounded-lg';
+                    img.loading = 'lazy'; // Optional: for performance
+                    img.onerror = () => {
+                        console.error(`Failed to load image: ${imageUrl}`);
+                        img.src = 'https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found';
+                    };
+
+                    // Add a click event listener to each image
+                    img.addEventListener('click', () => {
+                        // Fetch the image data
+                        fetch(imageUrl)
+                            .then(response => response.blob())
+                            .then(blob => {
+                                // Create a temporary URL for the blob
+                                const blobUrl = URL.createObjectURL(blob);
+                                
+                                // Create a temporary anchor tag to trigger the download
+                                const tempLink = document.createElement('a');
+                                tempLink.href = blobUrl;
+                                tempLink.download = `image_${i}.jpg`;
+                                
+                                // Programmatically click the link to trigger the download
+                                document.body.appendChild(tempLink);
+                                tempLink.click();
+                                document.body.removeChild(tempLink);
+
+                                // Clean up the temporary URL
+                                URL.revokeObjectURL(blobUrl);
+                            })
+                            .catch(e => console.error("Could not download image:", e));
+                    });
+                    
+                    // Append the image to the container
+                    imgContainer.appendChild(img);
+                    gallery.appendChild(imgContainer);
+                }
+            </script>
+        </div>
+    </div>
+
+</body>
+</html>
