@@ -4,164 +4,115 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Whale64</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Lexend&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Lexend', sans-serif;
-            background-color: #f3f4f6;
-        }
-        .image-container {
-            position: relative;
-            overflow: hidden;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
-            transition: transform 0.3s ease-in-out;
-            --tw-aspect-ratio: 16/9;
-            aspect-ratio: var(--tw-aspect-ratio);
-        }
-        .image-container:hover {
-            transform: scale(1.05);
-            cursor: pointer;
-        }
-        /* Modal Styles */
-        .modal {
-            display: none;
-            position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.9);
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            position: relative;
-            background-color: #fefefe;
-            padding: 1rem;
-            border-radius: 0.75rem;
+            font-family: sans-serif;
+            margin: 20px;
             display: flex;
             flex-direction: column;
-            gap: 1rem;
-            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+            align-items: center; 
+            background-color: #f4f4f4;
         }
-        .close {
-            position: absolute;
-            top: 10px;
-            right: 15px;
-            color: #aaa;
-            font-size: 28px;
-            font-weight: bold;
+        h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .image-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 25px;
+            width: 100%;
+            max-width: 1400px;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 10px;
+            box-shadow: 0 0 15px rgba(0,0,0,0.05);
+        }
+        .image-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
             cursor: pointer;
+            transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background-color: #eee;
+            height: 250px;
+        }
+        .image-item:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+        }
+        .image-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
     </style>
 </head>
-<body class="p-6">
-    <!-- Website Header -->
-    <header class="text-center mb-8">
-        <!-- Make sure to place logo.png in the same directory for it to show up -->
-        <img src="logo.png" alt="Logo" class="mx-auto block mb-4" />
-        <h3 class="mt-4 text-xl font-semibold text-gray-800">Home</h3>
-        <nav class="flex justify-center space-x-4 text-gray-700">
-            <a href="https://whale64.net" class="hover:underline">Home</a>
-            <a href="https://whale64.net/aboutme.html" class="hover:underline">About</a>
-            <a href="https://whale64.net/contactme.html" class="hover:underline">Contact Me</a>
-            <a href="https://whale64.net/menu.html" class="hover:underline">Site Map</a>
-        </nav>
-    </header>
+<body>
 
-    <div class="max-w-7xl mx-auto py-8">
-        <h1 class="text-4xl font-extrabold text-gray-900 mb-2 text-center">Image Gallery</h1>
-        <p class="text-lg text-gray-600 mb-8 text-center">A simple showcase of 21 beautiful images.</p>
+    <h1>Album #1 "The Place the Compass Forgot"</h1>
 
-        <!-- Image Grid -->
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-            <!-- Images will be generated here by the script -->
-        </div>
-    </div>
-
-    <!-- The Modal -->
-    <div id="image-modal" class="modal">
-        <div class="modal-content">
-            <span class="close">&times;</span>
-            <img id="modal-image" class="rounded-lg object-contain max-w-[90vw] max-h-[90vh]" src="" alt="Full-size preview">
-            <button id="download-btn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg transition duration-300 ease-in-out self-center">
-                Download Image
-            </button>
-        </div>
-    </div>
+    <div class="image-container" id="imageGallery"></div>
 
     <script>
-        const gallery = document.querySelector('.grid');
-        const modal = document.getElementById('image-modal');
-        const modalImage = document.getElementById('modal-image');
-        const closeBtn = document.querySelector('.close');
-        const downloadBtn = document.getElementById('download-btn');
         const baseUrl = 'https://raw.githubusercontent.com/Whale64/album1/main/';
+        const imageGallery = document.getElementById('imageGallery');
+
+        // Function to handle the download
+        async function downloadImage(imageUrl, fileName) {
+            try {
+                const response = await fetch(imageUrl);
+                const blob = await response.blob();
+                const url = window.URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.style.display = 'none';
+                a.href = url;
+                a.download = fileName;
+                document.body.appendChild(a);
+                a.click();
+                window.URL.revokeObjectURL(url);
+                a.remove();
+            } catch (error) {
+                console.error('Error downloading the image:', error);
+                alert('Could not download the image. Please try again.');
+            }
+        }
 
         for (let i = 1; i <= 21; i++) {
             const imageUrl = `${baseUrl}${i}.jpg`;
-            const imgContainer = document.createElement('div');
-            imgContainer.className = 'image-container flex items-center justify-center';
+            const fileName = `image-${i}.jpg`;
 
+            // Create the image element
             const img = document.createElement('img');
             img.src = imageUrl;
-            img.alt = `Image number ${i}`;
-            img.className = 'w-full h-full object-cover rounded-lg';
+            img.alt = `Image ${i}`;
             img.loading = 'lazy';
-            img.onerror = () => {
-                console.error(`Failed to load image: ${imageUrl}`);
-                img.src = 'https://placehold.co/600x400/cccccc/333333?text=Image+Not+Found';
-            };
 
-            // Event listener to open the modal
-            img.addEventListener('click', () => {
-                modal.style.display = 'flex';
-                modalImage.src = imageUrl;
+            // Create a styled div to wrap the image
+            const imageItem = document.createElement('div');
+            imageItem.classList.add('image-item');
+            imageItem.appendChild(img);
+
+            // Add the click event listener to the styled div
+            imageItem.addEventListener('click', () => {
+                downloadImage(imageUrl, fileName);
             });
-            
-            imgContainer.appendChild(img);
-            gallery.appendChild(imgContainer);
+
+            imageGallery.appendChild(imageItem);
         }
-
-        // Event listener to close the modal
-        closeBtn.addEventListener('click', () => {
-            modal.style.display = 'none';
-        });
-
-        // Close modal when clicking outside the content
-        window.addEventListener('click', (event) => {
-            if (event.target === modal) {
-                modal.style.display = 'none';
-            }
-        });
-
-        // Event listener for the download button inside the modal
-        downloadBtn.addEventListener('click', () => {
-            const imageUrl = modalImage.src;
-            // Get the image number from the URL for the filename
-            const imageName = imageUrl.substring(imageUrl.lastIndexOf('/') + 1);
-
-            fetch(imageUrl)
-                .then(response => response.blob())
-                .then(blob => {
-                    const blobUrl = URL.createObjectURL(blob);
-                    const tempLink = document.createElement('a');
-                    tempLink.href = blobUrl;
-                    tempLink.download = imageName;
-                    
-                    document.body.appendChild(tempLink);
-                    tempLink.click();
-                    document.body.removeChild(tempLink);
-                    URL.revokeObjectURL(blobUrl);
-                })
-                .catch(e => console.error("Could not download image:", e));
-        });
     </script>
+  <footer class="bg-gray-900 text-white text-center p-4 rounded-t-lg">
+    <div class="container mx-auto">
+  
+      
+    <p>Photos #1  © 2025 by Whale64 is licensed under CC BY-NC-SA 4.0. To view a copy of this license, visit https://creativecommons.org/licenses/by-nc-sa/4.0/</p>
 
+    </div>
+  </footer>
 </body>
 </html>
