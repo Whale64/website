@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=BBH+Bogle&display=swap" rel="stylesheet">
+
+<script>
+    
+    let spins = 0;
+
+    setInterval(function() {
+      spins++;
+      document.getElementById("spinCounter").textContent = "Spins: " + spins;
+    }, 1350);
+  </script>
+  <style>
+      body {
+          background-color: lightblue;
+          text-align: center;
+      }
+      h1 {
+          background-color: blue;
+          color:white;
+          font: average;
+            font-family: "BBH Bogle", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+      }
+  </style>
+</head>
+
+<body>
+    
+    <h1>Watch the penguin spin for several hours.</h1>
+      <h1 id="spinCounter">Spins: 0</h1>
+    <img src='https://i.imgur.com/fEcuU4j.gif' width='300'>
+</body>
+
+</html>
