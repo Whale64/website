@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Google Classroom</title>
+    <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Load Google CSE Script -->
+    <script async src="https://cse.google.com/cse.js?cx=41c303376dc46467b"></script>
+
+    <style>
+        :root {
+            --classroom-green: #1e8e3e;
+        }
+        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f3f4; overflow: hidden; }
+        
+        .top-bar { 
+            background-color: var(--classroom-green); 
+            padding: 8px 15px; 
+            display: flex; 
+            align-items: center; 
+            gap: 12px; 
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 1000;
+        }
+
+        .logo-btn {
+            background: none;
+            border: none;
+            cursor: pointer;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            border-radius: 50%;
+            transition: background 0.2s;
+        }
+
+        .logo-btn:hover { background: rgba(255,255,255,0.2); }
+
+        .logo { height: 28px; width: 28px; }
+
+        .url-input { 
+            flex: 1; 
+            padding: 10px 15px; 
+            border-radius: 24px; 
+            border: none; 
+            outline: none; 
+            font-size: 14px;
+            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .load-btn { 
+            padding: 8px 20px; 
+            border-radius: 20px; 
+            border: none; 
+            background-color: white; 
+            color: var(--classroom-green);
+            cursor: pointer; 
+            font-weight: 600; 
+            transition: all 0.2s;
+        }
+
+        .load-btn:hover { background-color: #f8f9fa; transform: translateY(-1px); }
+
+        #content-area {
+            width: 100%;
+            height: calc(100vh - 56px);
+            position: relative;
+            background: white;
+        }
+
+        #viewer { 
+            width: 100%; 
+            height: 100%; 
+            border: none; 
+            display: block; 
+        }
+
+        #search-container {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            overflow-y: auto;
+            display: none;
+            z-index: 50;
+        }
+
+        .gsc-control-cse {
+            padding: 20px !important;
+            border: none !important;
+            font-family: inherit !important;
+        }
+        
+        .gsc-search-box-tools { display: none !important; }
+    </style>
+</head>
+<body>
+
+    <div class="top-bar">
+        <button class="logo-btn" onclick="goHome()" title="Home">
+            <img class="logo" src="https://ssl.gstatic.com/classroom/favicon.png" alt="Logo">
+        </button>
+        <input type="text" id="url" class="url-input" placeholder="Search Google or type a URL..." onkeydown="if(event.key==='Enter') loadContent()">
+        <button class="load-btn" onclick="loadContent()">Go</button>
+    </div>
+
+    <div id="content-area">
+        <iframe id="viewer" name="viewer-frame" src="about:blank"></iframe>
+        <div id="search-container">
+            <!-- 
+                 data-enableHistory="false": Fixes the SecurityError.
+                 data-linkTarget="viewer-frame": Forces search results to open in the iframe.
+            -->
+            <div class="gcse-searchresults-only" 
+                 data-enableHistory="false" 
+                 data-newWindow="false" 
+                 data-linkTarget="viewer-frame"
+                 data-queryParameterName="q"></div>
+        </div>
+    </div>
+
+    <script>
+        let searchElement = null;
+
+        function goHome() {
+            const viewer = document.getElementById("viewer");
+            const searchContainer = document.getElementById("search-container");
+            const input = document.getElementById("url");
+            
+            input.value = "";
+            searchContainer.style.display = "none";
+            viewer.style.display = "block";
+            viewer.src = "about:blank";
+        }
+
+        // We listen for messages from the search iframe if possible, 
+        // but the most reliable way is to handle the view switch when a search result is clicked.
+        // Google CSE's linkTarget handles the loading; we just need to show the viewer.
+        window.addEventListener('click', function(e) {
+            // If the user clicks a link inside the search container, 
+            // we switch back to the viewer after a short delay to allow the URL to load.
+            if (e.target.closest('.gs-title') || e.target.closest('.gs-image')) {
+                setTimeout(() => {
+                    document.getElementById("search-container").style.display = "none";
+                    document.getElementById("viewer").style.display = "block";
+                }, 500);
+            }
+        }, true);
+
+        async function loadContent() {
+            const inputField = document.getElementById("url");
+            const query = inputField.value.trim();
+            const viewer = document.getElementById("viewer");
+            const searchContainer = document.getElementById("search-container");
+
+            if (!query) return;
+
+            const isUrl = /^[^\s]+\.[^\s]+$/.test(query);
+
+            if (isUrl) {
+                let url = query;
+                if (!url.startsWith("http://") && !url.startsWith("https://")) {
+                    url = "https://" + url;
+                }
+                
+                searchContainer.style.display = "none";
+                viewer.style.display = "block";
+                viewer.src = url;
+            } else {
+                viewer.style.display = "none";
+                searchContainer.style.display = "block";
+
+                const tryExecuteSearch = () => {
+                    if (window.google && google.search && google.search.cse) {
+                        if (!searchElement) {
+                            searchElement = google.search.cse.element.getElement('searchresults-only0');
+                        }
+                        
+                        if (searchElement) {
+                            try {
+                                searchElement.execute(query);
+                            } catch (e) {
+                                console.error("Search execution failed:", e);
+                            }
+                        } else {
+                            setTimeout(tryExecuteSearch, 200);
+                        }
+                    } else {
+                        setTimeout(tryExecuteSearch, 500);
+                    }
+                };
+
+                tryExecuteSearch();
+            }
+        }
+
+        window.onload = () => {
+            console.log("Viewer ready");
+        };
+    </script>
+</body>
+</html>
