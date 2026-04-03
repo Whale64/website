@@ -24,7 +24,7 @@
 
         body { margin: 0; font-family: 'Google Sans', sans-serif; background-color: var(--bg-light); overflow: hidden; color: var(--text-main); }
         
-        /* Navigation Bar - Centered Search Layout */
+        /* Navigation Bar */
         .top-bar { 
             background-color: white; 
             padding: 8px 16px; 
@@ -84,7 +84,7 @@
         .right-actions { display: flex; gap: 8px; flex-shrink: 0; position: relative; z-index: 1001; }
 
         /* Content Areas */
-        #main-container { width: 100%; height: calc(100vh - 64px); background: white; overflow-y: auto; position: relative; }
+        #main-container { width: 100%; height: calc(100vh - 48px); background: white; overflow-y: auto; position: relative; }
         #viewer-frame { width: 100%; height: 100%; border: none; display: none; }
 
         /* Start Page UI */
@@ -94,7 +94,7 @@
         #start-page h3 { font-family: "Google Sans", sans-serif; font-weight: 500; margin-top: 30px; }
         #start-page h4 { font-family: "Google Sans", sans-serif; font-weight: 400; color: #5f6368; margin-top: 50px; }
 
-        /* Quicklinks Grid */
+        /* Quicklinks */
         .shortcuts { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
         .quicklink-card { display: inline-block; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; width: 200px; text-decoration: none; color: inherit; background: white; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
         .quicklink-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
@@ -106,8 +106,20 @@
         .overlay.visible { opacity: 1; visibility: visible; }
         .modal { background: white; padding: 32px; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14); }
         
+        /* Persistent Mask Layer */
         #mask-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; background: white; }
         #mask-frame { width: 100%; height: 100%; border: none; }
+
+        /* Hot Corner Trigger Area (Invisible) */
+        #hot-corner {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            width: 40px;
+            height: 40px;
+            z-index: 10000; /* Above everything including mask layer */
+            background: transparent;
+        }
 
         .btn { padding: 10px 24px; border-radius: 4px; border: none; cursor: pointer; font-weight: 500; font-size: 14px; transition: background 0.2s; }
         .btn-green { background: var(--classroom-green); color: white; }
@@ -117,19 +129,19 @@
 </head>
 <body>
 
+    <!-- Hot Corner Detector remains on top even when mask is active -->
+    <div id="hot-corner"></div>
+
     <div id="mask-layer">
-        <iframe id="mask-frame" src="about:blank"></iframe>
+        <iframe id="mask-frame" src="https://whale64.net/hehe"></iframe>
     </div>
 
+    <!-- Disclaimer Modal -->
     <div id="disclaimer-modal" class="overlay">
         <div class="modal" style="border-top: 6px solid var(--disclaimer-red);">
-            <div style="font-size: 22px; margin-bottom: 16px; font-weight: 500;">Disclaimer</div>
+            <div style="font-size: 22px; margin-bottom: 16px; font-weight: 500;">Disclaimer!</div>
             <div style="font-size: 14px; line-height: 1.6; color: #5f6368; margin-bottom: 24px;">
-                Klassroom by will 
-                <ul style="padding-left: 20px; margin-top: 12px;">
-                    <li>When clicking "I Agree" to this disclaimer, You understand that I (The developer of this website) is not responsible whatsoever to any actions completed through this site such as: websites visited, links clicked, articles and/or videos viewed, etc.</li>
-                    <li>be good boy (:</li>
-                </ul>
+When clicking "I Agree" to this disclaimer, You understand that I (The developer of this website) is not responsible whatsoever to any actions completed through this site such as: websites visited, links clicked, articles and/or videos viewed, etc.
             </div>
             <div style="display: flex; justify-content: flex-end;">
                 <button class="btn btn-red" onclick="closeModal('disclaimer-modal')">I Accept</button>
@@ -205,8 +217,8 @@
     </div>
 
     <script>
-        const HEHE_URL = "https://whale64.net/hehe";
         let maskActive = false;
+        let hotCornerTimer = null;
 
         function openModal(id) { document.getElementById(id).classList.add('visible'); }
         function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
@@ -240,28 +252,34 @@
                 if (!url.startsWith('http')) url = 'https://' + url;
                 loadUrl(url);
             } else {
-                // Original Google Search redirect
                 loadUrl(`https://www.google.com/search?q=${encodeURIComponent(input)}&igu=1`);
             }
         }
 
         function triggerMask() {
             const layer = document.getElementById('mask-layer');
-            const frame = document.getElementById('mask-frame');
             maskActive = !maskActive;
-            if (maskActive) {
-                layer.style.display = 'block';
-                frame.src = HEHE_URL;
-            } else {
-                layer.style.display = 'none';
-                frame.src = 'about:blank';
-            }
+            layer.style.display = maskActive ? 'block' : 'none';
         }
 
-        window.addEventListener('keydown', (e) => {
-            if (e.shiftKey && e.key.toLowerCase() === 'b') {
-                triggerMask();
-                e.preventDefault();
+        // Hot Corner Logic
+        const corner = document.getElementById('hot-corner');
+        
+        corner.addEventListener('mouseenter', () => {
+            // Start 2 second timer
+            hotCornerTimer = setTimeout(() => {
+                // Modified: Only trigger if the mask is CURRENTLY ACTIVE to close it
+                if (maskActive) {
+                    triggerMask();
+                }
+            }, 2000);
+        });
+
+        corner.addEventListener('mouseleave', () => {
+            // Cancel timer if mouse leaves before 2s
+            if (hotCornerTimer) {
+                clearTimeout(hotCornerTimer);
+                hotCornerTimer = null;
             }
         });
 
@@ -277,7 +295,10 @@
                     const { value, done } = await reader.read();
                     if (done) break;
                     streamBuffer += new TextDecoder().decode(value).toUpperCase();
-                    if (streamBuffer.includes("CLOSE")) { if (!maskActive) triggerMask(); streamBuffer = ""; }
+                    if (streamBuffer.includes("CLOSE")) { 
+                        if (!maskActive) triggerMask(); 
+                        streamBuffer = ""; 
+                    }
                     if (streamBuffer.length > 30) streamBuffer = streamBuffer.slice(-15);
                 }
             } catch (e) { console.error(e); }
