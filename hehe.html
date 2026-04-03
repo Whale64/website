@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled document - Google Docs</title>
+    <!-- Tailwind CSS for rapid layout and styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Google Fonts: Roboto for UI, Material Symbols for icons -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet" />
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Roboto', 'sans-serif'],
+                        doc: ['Arial', 'sans-serif']
+                    },
+                    colors: {
+                        'docs-bg': '#f9fbfd',
+                        'docs-toolbar': '#edf2fa',
+                        'docs-toolbar-hover': '#e1e5ea',
+                        'docs-icon': '#444746',
+                        'docs-blue': '#0b57d0',
+                        'docs-share-bg': '#c2e7ff',
+                        'docs-share-hover': '#b5e0fe',
+                        'docs-share-text': '#001d35',
+                        'docs-menu-hover': '#e4e5e7',
+                        'docs-active-bg': '#d3e3fd',
+                        'docs-active-text': '#041e49',
+                        'docs-border': '#c7c7c7'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        /* Exact Material Symbol configurations for modern Google look */
+        .material-symbols-outlined {
+            font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+            font-size: 20px;
+        }
+        
+        /* Smaller icons for specific areas */
+        .icon-sm {
+            font-size: 18px;
+        }
+        
+        /* Fill icons when active/specific states */
+        .material-symbols-outlined.filled {
+            font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 20;
+        }
+
+        /* Custom scrollbar to match Google's */
+        ::-webkit-scrollbar {
+            width: 14px;
+            height: 14px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #f9fbfd;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #dadce0;
+            border: 4px solid #f9fbfd;
+            border-radius: 8px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #bdc1c6;
+        }
+
+        /* Editor specific styling */
+        #editor {
+            min-height: 1056px; /* 11 inches at 96 DPI */
+            width: 816px;       /* 8.5 inches at 96 DPI */
+            padding: 96px;      /* 1 inch margins */
+            box-shadow: 0 1px 3px 1px rgba(0,0,0,0.15);
+            outline: none;
+            cursor: text;
+        }
+        
+        #editor p {
+            margin-bottom: 0;
+            line-height: 1.5;
+        }
+
+        /* Toolbar button styles */
+        .btn-toolbar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 4px;
+            border-radius: 4px;
+            color: #444746;
+            cursor: pointer;
+            transition: background-color 0.1s;
+        }
+        .btn-toolbar:hover {
+            background-color: #e1e5ea;
+        }
+        .btn-toolbar.active {
+            background-color: #d3e3fd;
+            color: #041e49;
+        }
+        
+        .separator {
+            width: 1px;
+            height: 20px;
+            background-color: #c7c7c7;
+            margin: 0 4px;
+        }
+
+        /* Menu item styles */
+        .menu-item {
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-size: 14px;
+            cursor: pointer;
+            color: #1f1f1f;
+        }
+        .menu-item:hover {
+            background-color: #e4e5e7;
+        }
+    </style>
+</head>
+<body class="bg-docs-bg h-screen flex flex-col font-sans overflow-hidden text-[#1f1f1f]">
+
+    <!-- Top Header -->
+    <header class="flex items-center justify-between px-4 pt-3 pb-2 shrink-0">
+        <!-- Left Side: Logo & Menus -->
+        <div class="flex items-start">
+            <!-- Docs Icon -->
+            <div class="mr-2 mt-1 cursor-pointer">
+                <svg width="40" height="40" viewBox="0 0 40 40">
+                    <path fill="#4285F4" d="M24.5,36h-15C7.567,36,6,34.433,6,32.5v-25C6,5.567,7.567,4,9.5,4h11L34,17.5v15C34,34.433,32.433,36,30.5,36z" />
+                    <path fill="#8AB4F8" d="M34,17.5H24.5c-2.209,0-4-1.791-4-4V4L34,17.5z" />
+                    <path fill="#1967D2" d="M25,26H13c-0.552,0-1-0.448-1-1s0.448-1,1-1h12c0.552,0,1,0.448,1,1S25.552,26,25,26z M25,22H13c-0.552,0-1-0.448-1-1s0.448-1,1-1h12c0.552,0,1,0.448,1,1S25.552,22,25,22z M19,30h-6c-0.552,0-1-0.448-1-1s0.448-1,1-1h6c0.552,0,1,0.448,1,1S19.552,30,19,30z" />
+                </svg>
+            </div>
+            
+            <div class="flex flex-col">
+                <!-- Title Row -->
+                <div class="flex items-center gap-2 px-1 relative top-[-2px]">
+                    <input type="text" value="Untitled document" class="text-lg bg-transparent hover:bg-docs-menu-hover focus:bg-white focus:outline-docs-blue focus:outline-2 focus:outline px-1 rounded truncate w-48 transition-colors border-none" />
+                    <span class="material-symbols-outlined icon-sm text-docs-icon cursor-pointer hover:bg-docs-menu-hover rounded-full p-1">star</span>
+                    <span class="material-symbols-outlined icon-sm text-docs-icon cursor-pointer hover:bg-docs-menu-hover rounded-full p-1">drive_file_move</span>
+                    <span class="material-symbols-outlined icon-sm text-docs-icon cursor-pointer hover:bg-docs-menu-hover rounded-full p-1">cloud_done</span>
+                </div>
+                <!-- Menu Row -->
+                <div class="flex items-center ml-[-4px] mt-[-2px]">
+                    <div class="menu-item">File</div>
+                    <div class="menu-item">Edit</div>
+                    <div class="menu-item">View</div>
+                    <div class="menu-item">Insert</div>
+                    <div class="menu-item">Format</div>
+                    <div class="menu-item">Tools</div>
+                    <div class="menu-item">Extensions</div>
+                    <div class="menu-item">Help</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Side: Action Icons & Profile -->
+        <div class="flex items-center gap-2">
+            <div class="cursor-pointer hover:bg-docs-menu-hover rounded-full p-2 flex items-center justify-center" title="Open comment history">
+                <span class="material-symbols-outlined text-docs-icon">history</span>
+            </div>
+            <div class="cursor-pointer hover:bg-docs-menu-hover rounded-full p-2 flex items-center justify-center" title="Join a call or present this document">
+                <span class="material-symbols-outlined text-docs-icon">videocam</span>
+                <span class="material-symbols-outlined text-docs-icon icon-sm ml-1">arrow_drop_down</span>
+            </div>
+            <button class="bg-docs-share-bg hover:bg-docs-share-hover text-docs-share-text flex items-center gap-2 px-6 py-2 rounded-full font-medium ml-2 transition-colors">
+                <span class="material-symbols-outlined icon-sm filled text-docs-share-text">lock</span>
+                Share
+            </button>
+            <div class="w-9 h-9 rounded-full bg-purple-600 text-white flex items-center justify-center ml-2 cursor-pointer border-2 border-transparent hover:border-docs-bg hover:shadow-sm font-medium text-lg">
+                J
+            </div>
+        </div>
+    </header>
+
+    <!-- Toolbar -->
+    <div class="mx-4 mb-3 bg-docs-toolbar rounded-full flex items-center px-4 py-1.5 flex-nowrap overflow-x-auto shrink-0 shadow-sm gap-0.5">
+        
+        <!-- Undo / Redo / Print / Spellcheck / Format Painter -->
+        <div class="btn-toolbar" title="Undo (Ctrl+Z)" onclick="execCmd('undo')"><span class="material-symbols-outlined">undo</span></div>
+        <div class="btn-toolbar" title="Redo (Ctrl+Y)" onclick="execCmd('redo')"><span class="material-symbols-outlined">redo</span></div>
+        <div class="btn-toolbar" title="Print (Ctrl+P)"><span class="material-symbols-outlined">print</span></div>
+        <div class="btn-toolbar" title="Spelling and grammar check (Ctrl+Alt+X)"><span class="material-symbols-outlined">spellcheck</span></div>
+        <div class="btn-toolbar" title="Paint format"><span class="material-symbols-outlined">format_paint</span></div>
+        
+        <div class="separator"></div>
+        
+        <!-- Zoom -->
+        <div class="btn-toolbar hover:bg-docs-toolbar-hover px-2 text-sm font-medium gap-1">
+            100% <span class="material-symbols-outlined icon-sm">arrow_drop_down</span>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <!-- Font -->
+        <div class="btn-toolbar hover:bg-docs-toolbar-hover px-2 w-28 justify-between text-sm gap-1 truncate">
+            <span class="truncate">Arial</span>
+            <span class="material-symbols-outlined icon-sm">arrow_drop_down</span>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <!-- Font Size -->
+        <div class="flex items-center">
+            <div class="btn-toolbar"><span class="material-symbols-outlined icon-sm">remove</span></div>
+            <input type="text" value="11" class="w-8 text-center bg-transparent border border-transparent hover:border-gray-300 rounded focus:bg-white focus:border-docs-blue focus:outline-none text-sm font-medium py-1" />
+            <div class="btn-toolbar"><span class="material-symbols-outlined icon-sm">add</span></div>
+        </div>
+        
+        <div class="separator"></div>
+        
+        <!-- Formatting -->
+        <div class="btn-toolbar font-serif font-bold text-lg" title="Bold (Ctrl+B)" id="btn-bold" onclick="execCmd('bold')"><span class="material-symbols-outlined">format_bold</span></div>
+        <div class="btn-toolbar font-serif italic text-lg" title="Italic (Ctrl+I)" id="btn-italic" onclick="execCmd('italic')"><span class="material-symbols-outlined">format_italic</span></div>
+        <div class="btn-toolbar font-serif underline text-lg" title="Underline (Ctrl+U)" id="btn-underline" onclick="execCmd('underline')"><span class="material-symbols-outlined">format_underlined</span></div>
+        <div class="btn-toolbar text-docs-icon relative" title="Text color">
+            <span class="material-symbols-outlined">format_color_text</span>
+            <div class="absolute bottom-1 left-2/4 transform -translate-x-2/4 w-3.5 h-1 bg-black"></div>
+        </div>
+        <div class="btn-toolbar" title="Highlight color"><span class="material-symbols-outlined">format_color_fill</span></div>
+        
+        <div class="separator"></div>
+        
+        <!-- Inserts -->
+        <div class="btn-toolbar" title="Insert link (Ctrl+K)"><span class="material-symbols-outlined">add_link</span></div>
+        <div class="btn-toolbar" title="Add comment (Ctrl+Alt+M)"><span class="material-symbols-outlined">add_comment</span></div>
+        <div class="btn-toolbar" title="Insert image"><span class="material-symbols-outlined">image</span></div>
+        
+        <div class="separator"></div>
+        
+        <!-- Alignment -->
+        <div class="btn-toolbar active" title="Left align (Ctrl+Shift+L)" onclick="execCmd('justifyLeft')"><span class="material-symbols-outlined">format_align_left</span></div>
+        <div class="btn-toolbar" title="Center align (Ctrl+Shift+E)" onclick="execCmd('justifyCenter')"><span class="material-symbols-outlined">format_align_center</span></div>
+        <div class="btn-toolbar" title="Right align (Ctrl+Shift+R)" onclick="execCmd('justifyRight')"><span class="material-symbols-outlined">format_align_right</span></div>
+        <div class="btn-toolbar" title="Justify (Ctrl+Shift+J)" onclick="execCmd('justifyFull')"><span class="material-symbols-outlined">format_align_justify</span></div>
+        
+        <div class="separator"></div>
+
+        <!-- Line Spacing & Lists -->
+        <div class="btn-toolbar" title="Line & paragraph spacing"><span class="material-symbols-outlined">format_line_spacing</span></div>
+        <div class="btn-toolbar" title="Checklist"><span class="material-symbols-outlined">checklist</span></div>
+        <div class="btn-toolbar" title="Bulleted list (Ctrl+Shift+8)" onclick="execCmd('insertUnorderedList')"><span class="material-symbols-outlined">format_list_bulleted</span></div>
+        <div class="btn-toolbar" title="Numbered list (Ctrl+Shift+7)" onclick="execCmd('insertOrderedList')"><span class="material-symbols-outlined">format_list_numbered</span></div>
+        <div class="btn-toolbar" title="Decrease indent (Ctrl+[)"><span class="material-symbols-outlined">format_indent_decrease</span></div>
+        <div class="btn-toolbar" title="Increase indent (Ctrl+])"><span class="material-symbols-outlined">format_indent_increase</span></div>
+        
+        <div class="separator"></div>
+        
+        <!-- Clear formatting -->
+        <div class="btn-toolbar" title="Clear formatting (Ctrl+\)" onclick="execCmd('removeFormat')"><span class="material-symbols-outlined">format_clear</span></div>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="flex-1 flex overflow-hidden">
+        
+        <!-- Left Sidebar (Outline/Summary) -->
+        <div class="w-16 hover:w-64 group flex flex-col pt-4 border-r border-transparent transition-all duration-300 shrink-0 bg-docs-bg relative z-10 overflow-hidden">
+            <div class="px-4 text-docs-icon flex items-center justify-start gap-4 whitespace-nowrap cursor-pointer">
+                <span class="material-symbols-outlined" title="Show document outline">list_alt</span>
+                <span class="text-sm font-medium opacity-0 group-hover:opacity-100 transition-opacity">Outline</span>
+            </div>
+        </div>
+
+        <!-- Document Container -->
+        <div class="flex-1 overflow-y-auto flex justify-center bg-docs-bg pb-12 relative" id="scroll-container">
+            <!-- The Page -->
+            <div id="editor" class="bg-white mt-4 font-doc text-base text-black" contenteditable="true" spellcheck="false">
+                <p><br></p>
+            </div>
+        </div>
+
+        <!-- Right Side Panel (Keep, Tasks, etc.) -->
+        <div class="w-14 border-l border-gray-200 bg-white flex flex-col items-center py-4 gap-6 shrink-0 z-10">
+            <!-- Simplified Calendar Icon -->
+            <div class="w-8 h-8 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center p-1">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/a/a5/Google_Calendar_icon_%282020%29.svg" alt="Calendar" class="w-5 h-5">
+            </div>
+            <!-- Simplified Keep Icon -->
+            <div class="w-8 h-8 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center p-1">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/e/e5/Google_Keep_icon_%282020%29.svg" alt="Keep" class="w-5 h-5">
+            </div>
+            <!-- Simplified Tasks Icon -->
+            <div class="w-8 h-8 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center p-1">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/5b/Google_Tasks_2021.svg" alt="Tasks" class="w-5 h-5">
+            </div>
+            <!-- Simplified Contacts Icon -->
+            <div class="w-8 h-8 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center p-1">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/9/93/Google_Contacts_icon.svg" alt="Contacts" class="w-5 h-5">
+            </div>
+            <div class="w-6 border-b border-gray-300 my-2"></div>
+            <!-- Add Add-on Icon -->
+            <div class="w-8 h-8 rounded-full cursor-pointer hover:bg-gray-100 flex items-center justify-center text-docs-icon">
+                <span class="material-symbols-outlined icon-sm">add</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- JavaScript for basic editor functionality -->
+    <script>
+        const editor = document.getElementById('editor');
+
+        // Execute text formatting commands
+        function execCmd(command, value = null) {
+            document.execCommand(command, false, value);
+            editor.focus();
+            updateToolbar();
+        }
+
+        // Keep focus on editor when clicking toolbar buttons
+        document.querySelectorAll('.btn-toolbar').forEach(btn => {
+            btn.addEventListener('mousedown', (e) => {
+                e.preventDefault(); 
+            });
+        });
+
+        // Update toolbar active states based on cursor position
+        function updateToolbar() {
+            const commands = ['bold', 'italic', 'underline'];
+            
+            commands.forEach(cmd => {
+                const btn = document.getElementById(`btn-${cmd}`);
+                if (btn) {
+                    if (document.queryCommandState(cmd)) {
+                        btn.classList.add('active');
+                        btn.classList.remove('text-docs-icon');
+                    } else {
+                        btn.classList.remove('active');
+                        btn.classList.add('text-docs-icon');
+                    }
+                }
+            });
+        }
+
+        // Listen for typing or clicking in the editor to update toolbar
+        editor.addEventListener('keyup', updateToolbar);
+        editor.addEventListener('mouseup', updateToolbar);
+        editor.addEventListener('click', updateToolbar);
+
+        // Ensure page is ready and focused
+        window.onload = () => {
+            editor.focus();
+        };
+    </script>
+</body>
+</html>
