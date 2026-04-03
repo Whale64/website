@@ -5,361 +5,285 @@
     <title>Google Classroom</title>
     <link rel="icon" type="image/png" href="https://ssl.gstatic.com/classroom/favicon.png">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-    <!-- Load Google CSE Script -->
-    <script async src="https://cse.google.com/cse.js?cx=41c303376dc46467b"></script>
+    
+    <!-- External Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Google+Sans:ital,opsz,wght@0,17..18,400..700;1,17..18,400..700&family=Oswald:wght@200..700&display=swap" rel="stylesheet">
 
     <style>
         :root {
-            --classroom-green: #20A464;
-            --disclaimer-red: #F44336; /* Red theme color */
+            --classroom-green: #25A667;
+            --classroom-dark: #137333;
+            --classroom-yellow: #F6BB18;
+            --disclaimer-red: #d93025;
+            --text-main: #3c4043;
+            --bg-light: #f1f3f4;
+            --shadow: 0 1px 2px 0 rgba(60,64,67,0.3), 0 1px 3px 1px rgba(60,64,67,0.15);
         }
-        body { margin: 0; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f1f3f4; overflow: hidden; }
+
+        body { margin: 0; font-family: 'Google Sans', sans-serif; background-color: var(--bg-light); overflow: hidden; color: var(--text-main); }
         
+        /* Navigation Bar - Centered Search Layout */
         .top-bar { 
-            background-color: var(--classroom-green); 
-            padding: 8px 15px; 
+            background-color: white; 
+            padding: 8px 16px; 
             display: flex; 
             align-items: center; 
-            gap: 10px; 
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            justify-content: space-between;
+            box-shadow: var(--shadow);
             position: relative;
             z-index: 1000;
+            height: 48px;
         }
-
-        .logo-btn {
-            background: none;
-            border: none;
-            cursor: pointer;
-            padding: 5px;
-            display: flex;
-            align-items: center;
-            border-radius: 50%;
-            transition: background 0.2s;
-            flex-shrink: 0;
-        }
-
-        .logo-btn:hover { background: rgba(255,255,255,0.2); }
-
-        .logo { height: 28px; width: 28px; }
-
-        .nav-controls {
-            display: flex;
-            gap: 5px;
-            align-items: center;
-            flex-shrink: 0;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: white;
-            cursor: pointer;
-            padding: 8px;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.2s;
-        }
-
-        .nav-btn:hover {
-            background: rgba(255,255,255,0.2);
-        }
-
-        .nav-btn svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        .url-input { 
-            flex: 1; 
-            padding: 10px 15px; 
-            border-radius: 24px; 
-            border: none; 
-            outline: none; 
-            font-size: 14px;
-            box-shadow: inset 0 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .load-btn { 
-            padding: 8px 20px; 
-            border-radius: 20px; 
-            border: none; 
-            background-color: white; 
-            color: var(--classroom-green);
+        
+        .logo-group { 
+            display: flex; 
+            align-items: center; 
             cursor: pointer; 
-            font-weight: 600; 
-            transition: all 0.2s;
-            flex-shrink: 0;
-        }
-
-        .load-btn:hover { background-color: #f8f9fa; transform: translateY(-1px); }
-
-        #content-area {
-            width: 100%;
-            height: calc(100vh - 56px);
-            position: relative;
-            background: white;
-        }
-
-        #viewer { 
-            width: 100%; 
-            height: 100%; 
+            padding: 4px 8px; 
+            border-radius: 8px; 
+            transition: background 0.2s; 
             border: none; 
-            display: block; 
+            background: none;
+            flex-shrink: 0;
+            position: relative;
+            z-index: 1001;
         }
+        .logo-group:hover { background: #f8f9fa; }
+        .logo { height: 24px; width: 24px; }
+        .brand-text { font-size: 22px; color: #5f6368; margin-left: 8px; font-weight: 400; }
 
-        #search-container {
+        .search-wrapper { 
             position: absolute;
-            top: 0;
-            left: 0;
+            left: 50%;
+            transform: translateX(-50%);
             width: 100%;
-            height: 100%;
-            background: white;
-            overflow-y: auto;
-            display: none;
-            z-index: 50;
+            max-width: 600px;
+            display: flex; 
+            align-items: center; 
+            z-index: 1000;
         }
-
-        /* Modal Styles */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: rgba(0, 0, 0, 0.7);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 3000;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s ease;
-            backdrop-filter: blur(4px);
+        .url-input { 
+            width: 100%; 
+            padding: 10px 80px 10px 20px;
+            border-radius: 8px; 
+            border: 1px solid transparent; 
+            outline: none; 
+            font-size: 15px; 
+            background: #f1f3f4;
+            transition: all 0.2s;
         }
+        .url-input:focus { background: white; box-shadow: 0 1px 1px 0 rgba(65,69,73,0.3), 0 1px 3px 1px rgba(65,69,73,0.15); border-color: #e8eaed; }
+        
+        .search-btns { position: absolute; right: 8px; display: flex; gap: 2px; }
+        .icon-btn { background: none; border: none; padding: 6px; border-radius: 50%; cursor: pointer; color: #5f6368; display: flex; align-items: center; transition: background 0.2s; }
+        .icon-btn:hover { background: #e8eaed; }
+        .icon-btn svg { width: 18px; height: 18px; fill: currentColor; }
 
-        .modal-overlay.visible {
-            opacity: 1;
-            visibility: visible;
-        }
+        .right-actions { display: flex; gap: 8px; flex-shrink: 0; position: relative; z-index: 1001; }
 
-        .modal-content {
-            background: white;
-            padding: 30px;
-            border-radius: 12px;
-            max-width: 500px;
-            width: 90%;
-            text-align: center;
-            box-shadow: 0 15px 35px rgba(0,0,0,0.3);
-            transform: scale(0.9);
-            transition: transform 0.3s ease;
-        }
+        /* Content Areas */
+        #main-container { width: 100%; height: calc(100vh - 64px); background: white; overflow-y: auto; position: relative; }
+        #viewer-frame { width: 100%; height: 100%; border: none; display: none; }
 
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
-        }
+        /* Start Page UI */
+        #start-page { padding: 40px 20px; text-align: center; max-width: 1000px; margin: 0 auto; display: block; }
+        #start-page h1 { font-family: "Oswald", sans-serif; font-size: 85px; color: var(--classroom-green); margin: 0; font-weight: 700; }
+        #start-page h2 { font-family: "Google Sans", sans-serif; color: var(--classroom-yellow); margin: 0 0 20px 0; font-weight: 400; }
+        #start-page h3 { font-family: "Google Sans", sans-serif; font-weight: 500; margin-top: 30px; }
+        #start-page h4 { font-family: "Google Sans", sans-serif; font-weight: 400; color: #5f6368; margin-top: 50px; }
 
-        /* Specific themes for different modals */
-        .disclaimer-modal-content { border-top: 5px solid var(--disclaimer-red); }
-        .migration-modal-content { border-top: 5px solid var(--classroom-green); }
+        /* Quicklinks Grid */
+        .shortcuts { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; margin-top: 20px; }
+        .quicklink-card { display: inline-block; border: 1px solid #ccc; border-radius: 8px; overflow: hidden; width: 200px; text-decoration: none; color: inherit; background: white; transition: transform 0.2s, box-shadow 0.2s; cursor: pointer; }
+        .quicklink-card:hover { transform: translateY(-4px); box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .quicklink-card img { display: block; width: 200px; height: 200px; object-fit: cover; }
+        .quicklink-label { background-color: #f0f0f0; padding: 10px; text-align: center; font-family: sans-serif; font-size: 14px; border-top: 1px solid #ccc; font-weight: 500; }
 
-        .modal-content h2 { margin-top: 0; }
-        .modal-content p { color: #5f6368; line-height: 1.6; margin-bottom: 25px; font-size: 14px; text-align: left; }
-        .modal-actions { display: flex; gap: 10px; justify-content: center; }
+        /* Overlays */
+        .overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(32,33,36,0.6); display: flex; justify-content: center; align-items: center; z-index: 3000; opacity: 0; visibility: hidden; transition: 0.2s; backdrop-filter: blur(2px); }
+        .overlay.visible { opacity: 1; visibility: visible; }
+        .modal { background: white; padding: 32px; border-radius: 8px; max-width: 500px; width: 90%; box-shadow: 0 24px 38px 3px rgba(0,0,0,0.14); }
+        
+        #mask-layer { position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; z-index: 9999; display: none; background: white; }
+        #mask-frame { width: 100%; height: 100%; border: none; }
 
-        .btn-primary {
-            color: white;
-            padding: 12px 24px;
-            border-radius: 6px;
-            text-decoration: none;
-            font-weight: 600;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.2s;
-        }
-        .btn-primary:hover { opacity: 0.9; }
-
-        .btn-red { background-color: var(--disclaimer-red); }
-        .btn-green { background-color: var(--classroom-green); }
-
-        .btn-secondary {
-            background-color: #f1f3f4;
-            color: #5f6368;
-            padding: 12px 24px;
-            border-radius: 6px;
-            border: none;
-            cursor: pointer;
-            font-weight: 600;
-        }
-
-        .disclaimer-box {
-            background: #fff5f5; /* Light red background */
-            border: 1px solid #ffcccc;
-            padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            color: var(--disclaimer-red) !important;
-            font-weight: 500;
-        }
-
-        .gsc-control-cse { padding: 20px !important; border: none !important; font-family: inherit !important; }
-        .gsc-search-box-tools { display: none !important; }
+        .btn { padding: 10px 24px; border-radius: 4px; border: none; cursor: pointer; font-weight: 500; font-size: 14px; transition: background 0.2s; }
+        .btn-green { background: var(--classroom-green); color: white; }
+        .btn-red { background: var(--disclaimer-red); color: white; }
+        .btn-flat { background: transparent; color: #5f6368; border: 1px solid #dadce0; }
     </style>
 </head>
 <body>
 
-    <!-- Legal Disclaimer Popup -->
-    <div id="disclaimer-modal" class="modal-overlay">
-        <div class="modal-content disclaimer-modal-content">
-            <h2 style="color: var(--disclaimer-red)">Terms of Use & Disclaimer</h2>
-            <div class="disclaimer-box">
-                "When clicking "I Agree" to this disclaimer, You understand that I (The developer of this website) is not responsible whatsoever to any actions completed through this site such as: websites visited, links clicked, articles and/or videos viewed, etc."
+    <div id="mask-layer">
+        <iframe id="mask-frame" src="about:blank"></iframe>
+    </div>
+
+    <div id="disclaimer-modal" class="overlay">
+        <div class="modal" style="border-top: 6px solid var(--disclaimer-red);">
+            <div style="font-size: 22px; margin-bottom: 16px; font-weight: 500;">Disclaimer</div>
+            <div style="font-size: 14px; line-height: 1.6; color: #5f6368; margin-bottom: 24px;">
+                Klassroom by will 
+                <ul style="padding-left: 20px; margin-top: 12px;">
+                    <li>When clicking "I Agree" to this disclaimer, You understand that I (The developer of this website) is not responsible whatsoever to any actions completed through this site such as: websites visited, links clicked, articles and/or videos viewed, etc.</li>
+                    <li>be good boy (:</li>
+                </ul>
             </div>
-            <p>
-                <strong>Legal Notice:</strong> This website is provided "as is" and "as available" without any warranties of any kind. By using this service, you agree to indemnify and hold harmless the developer from any claims, damages, or liabilities arising from your use of the proxy or search features. The developer does not monitor, endorse, or take responsibility for third-party content accessed via this portal.
-            </p>
-            <div class="modal-actions">
-                <button class="btn-primary btn-red" onclick="acceptDisclaimer()">I Agree</button>
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-red" onclick="closeModal('disclaimer-modal')">I Accept</button>
             </div>
         </div>
     </div>
 
-    <!-- Migration Notification (Green accent restored) -->
-    <div id="migration-modal" class="modal-overlay">
-        <div class="modal-content migration-modal-content">
-            <h2 style="color: var(--classroom-green)">New Site Available!</h2>
-            <p style="text-align: center;">We've moved to a better home. Please visit <strong>whale64.net/classroom</strong> to access the new version of this site.</p>
-            <div class="modal-actions">
-                <a href="https://whale64.net/classroom" class="btn-primary btn-green">Go to Site</a>
-                <button class="btn-secondary" onclick="closeMigration()">Dismiss</button>
+    <div id="settings-modal" class="overlay">
+        <div class="modal">
+            <div style="font-size: 22px; margin-bottom: 16px; font-weight: 500;">System Settings</div>
+            <div style="margin-bottom: 24px;">
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 12px 0; border-bottom: 1px solid #eee;">
+                    <span>Sense Mode (Hardware)</span>
+                    <button id="connect-btn" class="btn btn-flat" onclick="initSerial()">Connect</button>
+                </div>
+                <div id="active-tag" style="margin-top: 12px; font-weight: bold; color: var(--classroom-green); display: none;">● SENSOR ACTIVE</div>
+            </div>
+            <div style="display: flex; justify-content: flex-end;">
+                <button class="btn btn-green" onclick="closeModal('settings-modal')">Done</button>
             </div>
         </div>
     </div>
 
     <div class="top-bar">
-        <button class="logo-btn" onclick="goHome()" title="Home">
-            <img class="logo" src="https://ssl.gstatic.com/classroom/favicon.png" alt="Logo">
+        <button class="logo-group" onclick="goHome()">
+            <img class="logo" src="https://ssl.gstatic.com/classroom/favicon.png" alt="Icon">
+            <span class="brand-text">Classroom</span>
         </button>
+        
+        <div class="search-wrapper">
+            <input type="text" id="browser-input" class="url-input" placeholder="Search Google or type a URL" onkeydown="if(event.key==='Enter') runSearch()">
+            <div class="search-btns">
+                <button class="icon-btn" onclick="refreshFrame()" title="Refresh">
+                    <svg viewBox="0 0 24 24"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/></svg>
+                </button>
+            </div>
+        </div>
 
-        <div class="nav-controls">
-            <button class="nav-btn" onclick="reloadFrame()" title="Reload">
-                <svg viewBox="0 0 24 24"><path d="M17.65,6.35C16.2,4.9 14.21,4 12,4A8,8 0 0,0 4,12A8,8 0 0,0 12,20C15.73,20 18.84,17.45 19.73,14H17.65C16.83,16.33 14.61,18 12,18A6,6 0 0,1 6,12A6,6 0 0,1 12,6C13.66,6 15.14,6.69 16.22,7.78L13,11H20V4L17.65,6.35Z"/></svg>
+        <div class="right-actions">
+            <button class="icon-btn" onclick="openModal('settings-modal')" title="Settings">
+                <svg viewBox="0 0 24 24"><path d="M12,15.5A3.5,3.5 0 0,1 8.5,12A3.5,3.5 0 0,1 12,8.5A3.5,3.5 0 0,1 15.5,12A3.5,3.5 0 0,1 12,15.5M19.43,12.97C19.47,12.65 19.5,12.33 19.5,12C19.5,11.67 19.47,11.34 19.43,11L21.54,9.37C21.73,9.22 21.78,8.95 21.66,8.73L19.66,5.27C19.54,5.05 19.27,4.96 19.05,5.05L16.56,6.05C16.04,5.66 15.47,5.34 14.86,5.12L14.47,2.45C14.43,2.21 14.22,2 14,2H10C9.78,2 9.57,2.21 9.53,2.45L9.14,5.12C8.53,5.34 7.96,5.66 7.44,6.05L4.95,5.05C4.73,4.96 4.46,5.05 4.34,5.27L2.34,8.73C2.22,8.95 2.27,9.22 2.46,9.37L4.57,11C4.53,11.34 4.5,11.67 4.5,12C4.5,12.33 4.53,11.67 4.5,12C4.5,12.33 4.53,12.65 4.57,12.97L2.46,14.63C2.27,14.78 2.22,15.05 2.34,15.27L4.34,18.73C4.46,18.95 4.73,19.03 4.95,18.95L7.44,17.95C7.96,18.34 8.53,18.66 9.14,18.88L9.53,21.55C9.57,21.79 9.78,22 10,22H14C14.22,22 14.43,21.79 14.47,21.55L14.86,18.88C15.47,18.66 16.04,18.34 16.56,17.95L19.05,18.95C19.27,19.03 19.54,18.95 19.66,18.73L21.66,15.27C21.78,15.05 21.73,14.78 21.54,14.63L19.43,12.97Z"/></svg>
             </button>
         </div>
-
-        <input type="text" id="url" class="url-input" placeholder="Search Google or type a URL..." onkeydown="if(event.key==='Enter') loadContent()">
-        <button class="load-btn" onclick="loadContent()">Go</button>
     </div>
 
-    <div id="content-area">
-        <iframe id="viewer" name="viewer-frame" src="https://assets.whale64.net/classhome.html/"></iframe>
-        <div id="search-container">
-            <div class="gcse-searchresults-only" 
-                 data-enableHistory="false" 
-                 data-newWindow="false" 
-                 data-linkTarget="viewer-frame"
-                 data-queryParameterName="q"></div>
+    <div id="main-container">
+        <div id="start-page">
+            <h1>Classroom</h1>
+            <h2>______________________</h2>
+            <h3>Quicklinks:</h3>
+            <div class="shortcuts">
+                <a class="quicklink-card" onclick="loadUrl('https://rb.whale64.net/')">
+                    <img src="https://rb.whale64.net/logo.png" alt="Roadblocks">
+                    <div class="quicklink-label">Roadblocks</div>
+                </a>
+                <a class="quicklink-card" onclick="loadUrl('https://sr3d-rho.vercel.app/')">
+                    <img src="https://whale64.net/sr3d.jpg" alt="Snow Rider 3D">
+                    <div class="quicklink-label">Snow Rider 3D</div>
+                </a>
+                <a class="quicklink-card" onclick="loadUrl('https://sr3d-rho.vercel.app/fnaw.html')">
+                    <img src="https://sr3d-rho.vercel.app/fnaw.png" alt="Five Nights At Winston's">
+                    <div class="quicklink-label">Five Nights At Winston's</div>
+                </a>
+                <a class="quicklink-card" onclick="loadUrl('https://sr3d-rho.vercel.app/eaglercraft.html')">
+                    <img src="https://sr3d-rho.vercel.app/eaglercraft.png" alt="Eaglercraft">
+                    <div class="quicklink-label">Eaglercraft</div>
+                </a>
+            </div>
+            <h4>Classroom. Made By Will H</h4>
         </div>
+
+        <iframe id="viewer-frame" src="about:blank"></iframe>
     </div>
 
     <script>
-        const NewSitePopup = 'no';
-        const HOME_PAGE = 'https://assets.whale64.net/classhome.html/';
-        let searchElement = null;
+        const HEHE_URL = "https://whale64.net/hehe";
+        let maskActive = false;
 
-        function reloadFrame() {
-            const viewer = document.getElementById("viewer");
-            const searchContainer = document.getElementById("search-container");
-            const query = document.getElementById("url").value.trim();
-            
-            if (searchContainer.style.display === "block") {
-                executeSearch(query);
-            } else {
-                const currentSrc = viewer.src;
-                viewer.src = "about:blank";
-                setTimeout(() => { viewer.src = currentSrc; }, 10);
-            }
-        }
-
-        function acceptDisclaimer() {
-            document.getElementById('disclaimer-modal').classList.remove('visible');
-            checkMigrationStatus();
-        }
-
-        function closeMigration() {
-            document.getElementById('migration-modal').classList.remove('visible');
-        }
-
-        function checkMigrationStatus() {
-            if (NewSitePopup === 'yes') {
-                setTimeout(() => {
-                    document.getElementById('migration-modal').classList.add('visible');
-                }, 300);
-            }
-        }
+        function openModal(id) { document.getElementById(id).classList.add('visible'); }
+        function closeModal(id) { document.getElementById(id).classList.remove('visible'); }
 
         function goHome() {
-            const viewer = document.getElementById("viewer");
-            const searchContainer = document.getElementById("search-container");
-            const input = document.getElementById("url");
-            
-            input.value = "";
-            searchContainer.style.display = "none";
-            viewer.style.display = "block";
-            viewer.src = HOME_PAGE;
+            document.getElementById('start-page').style.display = 'block';
+            document.getElementById('viewer-frame').style.display = 'none';
+            document.getElementById('browser-input').value = "";
         }
 
-        async function loadContent() {
-            const inputField = document.getElementById("url");
-            const query = inputField.value.trim();
-            const viewer = document.getElementById("viewer");
-            const searchContainer = document.getElementById("search-container");
+        function loadUrl(url) {
+            const frame = document.getElementById('viewer-frame');
+            document.getElementById('start-page').style.display = 'none';
+            frame.style.display = 'block';
+            frame.src = url;
+            document.getElementById('browser-input').value = url;
+        }
 
-            if (!query) return;
+        function refreshFrame() {
+            const currentUrl = document.getElementById('browser-input').value;
+            if (currentUrl) loadUrl(currentUrl);
+        }
 
-            const isUrl = /^[^\s]+\.[^\s]+$/.test(query);
+        function runSearch() {
+            const input = document.getElementById('browser-input').value.trim();
+            if (!input) return;
 
+            const isUrl = (input.includes('.') && !input.includes(' ')) || input.startsWith('http');
             if (isUrl) {
-                let url = query;
-                if (!url.startsWith("http://") && !url.startsWith("https://")) {
-                    url = "https://" + url;
-                }
-                searchContainer.style.display = "none";
-                viewer.style.display = "block";
-                viewer.src = url;
+                let url = input;
+                if (!url.startsWith('http')) url = 'https://' + url;
+                loadUrl(url);
             } else {
-                viewer.style.display = "none";
-                searchContainer.style.display = "block";
-                executeSearch(query);
+                // Original Google Search redirect
+                loadUrl(`https://www.google.com/search?q=${encodeURIComponent(input)}&igu=1`);
             }
         }
 
-        function executeSearch(query) {
-            const tryExecuteSearch = () => {
-                if (window.google && google.search && google.search.cse) {
-                    if (!searchElement) {
-                        searchElement = google.search.cse.element.getElement('searchresults-only0');
-                    }
-                    if (searchElement) {
-                        try {
-                            searchElement.execute(query);
-                        } catch (e) { console.error("Search failed:", e); }
-                    } else {
-                        setTimeout(tryExecuteSearch, 200);
-                    }
-                } else {
-                    setTimeout(tryExecuteSearch, 500);
-                }
-            };
-            tryExecuteSearch();
+        function triggerMask() {
+            const layer = document.getElementById('mask-layer');
+            const frame = document.getElementById('mask-frame');
+            maskActive = !maskActive;
+            if (maskActive) {
+                layer.style.display = 'block';
+                frame.src = HEHE_URL;
+            } else {
+                layer.style.display = 'none';
+                frame.src = 'about:blank';
+            }
         }
 
-        window.onload = () => {
-            document.getElementById('disclaimer-modal').classList.add('visible');
-        };
+        window.addEventListener('keydown', (e) => {
+            if (e.shiftKey && e.key.toLowerCase() === 'b') {
+                triggerMask();
+                e.preventDefault();
+            }
+        });
+
+        async function initSerial() {
+            try {
+                const port = await navigator.serial.requestPort();
+                await port.open({ baudRate: 9600 });
+                document.getElementById('active-tag').style.display = 'block';
+                document.getElementById('connect-btn').innerText = 'Linked';
+                const reader = port.readable.getReader();
+                let streamBuffer = "";
+                while (true) {
+                    const { value, done } = await reader.read();
+                    if (done) break;
+                    streamBuffer += new TextDecoder().decode(value).toUpperCase();
+                    if (streamBuffer.includes("CLOSE")) { if (!maskActive) triggerMask(); streamBuffer = ""; }
+                    if (streamBuffer.length > 30) streamBuffer = streamBuffer.slice(-15);
+                }
+            } catch (e) { console.error(e); }
+        }
+
+        window.onload = () => openModal('disclaimer-modal');
     </script>
 </body>
 </html>
